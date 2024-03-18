@@ -1,0 +1,9 @@
+applications:
+- name: IntegracionNominaS4HC
+  path: .
+  memory: 128M
+  buildpacks:
+    - nodejs_buildpack
+  command: npm run start:prod
+  services:
+    - myxsuaa
