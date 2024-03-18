@@ -8,7 +8,8 @@ import * as xml2js from 'xml2js';
 
 @Injectable()
 export class NominaInfraestructureService {
-  logItems: any;
+  logItems;
+  logItemsSucess;
   // async createJornalEntry(xml) {
   //   const url = 'https://my405807-api.s4hana.cloud.sap/sap/bc/srt/scs_ext/sap/journalentrycreaterequestconfi'
   //   try {
@@ -57,16 +58,17 @@ export class NominaInfraestructureService {
       console.log(response)
       xml2js.parseString(response.data, (err, result) => {
         this.logItems = result['soap-env:Envelope']['soap-env:Body'][0]['n0:JournalEntryBulkCreateConfirmation'][0]['JournalEntryCreateConfirmation'][0]['Log'][0];
+        this.logItemsSucess = result['soap-env:Envelope']['soap-env:Body'][0]['n0:JournalEntryBulkCreateConfirmation'][0]['JournalEntryCreateConfirmation']
       });
       if(this.logItems.MaximumLogItemSeverityCode == '3'){
         return  new HttpException({
           status: HttpStatus.INTERNAL_SERVER_ERROR,
-          error: this.logItems,
+           error: this.logItems
         }, HttpStatus.INTERNAL_SERVER_ERROR);
       }else{
         return  new HttpException({
           status: HttpStatus.CREATED,
-          message: this.logItems
+          message: this.logItemsSucess
         }, HttpStatus.CREATED);
       }
     } catch (err) {
