@@ -16,24 +16,31 @@ export class NominaAplicationService {
   ) {}
 
   //Procesa el asiento contable
-  async processJournalEntry(fileContent: string, requestBody: RequestBodyProcessJournal) {  
+  async processJournalEntry(fileContent: string, requestBody: RequestBodyProcessJournal) {
+    try {
       const xmlObject = await this.parseXmlString(fileContent);
       const journalEntry = await this.mappingFields(xmlObject, requestBody);
-      const response = await this.createJornalEntry(
-        journalEntry,
-      );
+      const response = await this.createJornalEntry(journalEntry);
       return response;
-    
+    } catch (error) {
+      throw error;
+    }
+
   }
 
   //Convierte la cadena string en json
   async parseXmlString(xmlString: string): Promise<any> {
-    const parseStringPromise = promisify(parseString);
-      const result = await parseStringPromise(xmlString, {
-        explicitArray: false,
-        ignoreAttrs: true,
-      });
-      return result;
+    try {
+      const parseStringPromise = promisify(parseString);
+        const result = await parseStringPromise(xmlString, {
+          explicitArray: false,
+          ignoreAttrs: true,
+        });
+        return result;
+      
+    } catch (error) {
+      throw error.message;
+    }
 
   }
 
@@ -75,7 +82,7 @@ export class NominaAplicationService {
       const xml = builder.buildObject(jsonData);
       return xml;
     } catch (error) {
-      return error;
+      throw error.message;
     }
   }
 
@@ -117,7 +124,7 @@ export class NominaAplicationService {
         },
       };  
     } catch (error) {
-      return error;
+      throw error.message;
     }
    
   }
@@ -146,7 +153,7 @@ export class NominaAplicationService {
         };
       });
     } catch (error) {
-      return error;
+      throw error.message;
     }
     
   }
@@ -158,7 +165,7 @@ export class NominaAplicationService {
       );
       return response;
     } catch (error) {
-      return error
+      throw error;
     }
   }
 }

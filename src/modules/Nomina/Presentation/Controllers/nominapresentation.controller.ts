@@ -7,10 +7,13 @@ import {
   Get,
   HttpException,
   HttpStatus,
+  BadRequestException 
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { NominaAplicationService } from '../../Aplication/Services/nominaaplication.service';
 import { RequestBodyProcessJournal } from '../../Domain/Interfaces/RequestBodyProcessJournal';
+import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler';
+import { HttpStatusCode } from 'axios';
 
 @Controller('api/v1/journal')
 export class NominaPresentationController {
@@ -18,28 +21,32 @@ export class NominaPresentationController {
     private readonly _nominaAplicationService: NominaAplicationService,
   ) {}
 
-  @Post('upload')
+
+  @Post('/upload')
   @UseInterceptors(FileInterceptor('File'))
   async processJournalEntry(@UploadedFile() file, @Body() requestBody: RequestBodyProcessJournal): Promise<any> {
     try {
-      if (file) {
-        const fileContent = file.buffer.toString('utf-8');
-        return await this._nominaAplicationService.processJournalEntry(
-          fileContent, requestBody
-        );
+      if (!file || !requestBody.CompanyCode || !requestBody.CurrencyCode) {
+        throw new BadRequestException('Invalid request parameters');
       }
+      const fileContent = file.buffer.toString('utf-8');
+      return await this._nominaAplicationService.processJournalEntry(fileContent, requestBody);
+      
     } catch (error) {
-      return new HttpException({
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-        error: error.message,
-      }, HttpStatus.INTERNAL_SERVER_ERROR);
+      if (error instanceof BadRequestException) {
+        throw new HttpException({
+          status: HttpStatus.BAD_REQUEST,
+          error: error.message,
+        }, HttpStatus.BAD_REQUEST);
+      } else {
+        throw new HttpException({
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: error || 'Internal server error',
+        }, HttpStatus.INTERNAL_SERVER_ERROR);
+      }
     }
   }
-  @Post('/upload')
-  async get(){
-    throw new HttpException({
-      status: HttpStatus.INTERNAL_SERVER_ERROR,
-      error: "logItems",
-    }, HttpStatus.INTERNAL_SERVER_ERROR);
-  }
+
+  
+
 }
