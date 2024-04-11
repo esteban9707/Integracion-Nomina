@@ -12,18 +12,18 @@ export class NominaInfraestructureService {
   logItemsSucess;
 
   async createJornalEntry(xml) {
-    //const destinoConfig = JSON.parse(process.env.Destino);
-    // const username = destinoConfig.User;
-    // const password = destinoConfig.Password;
-    const url = "https://my405807-api.s4hana.cloud.sap/sap/bc/srt/scs_ext/sap/journalentrycreaterequestconfi"
+    const destinoConfig = JSON.parse(process.env.Destino);
+    const username = destinoConfig.User;
+    const password = destinoConfig.Password;
+    const url = destinoConfig.Url
 
       const response = await axios.post(
         url,
         xml,
         {
           auth: {
-            username: 'USER_ADMINISTRATOR_HBT',
-            password: 'AHyGnbty8neBGTVtGtbgJmpyoV#VtibskwjUTUou'
+            username: username,
+            password: password
           },
           headers: {
             'Content-Type': 'text/xml',
@@ -37,7 +37,7 @@ export class NominaInfraestructureService {
       if(this.logItems.MaximumLogItemSeverityCode == '3'){
         throw this.logItems;
       }else{
-        return {status: HttpStatusCode.Created,response:this.logItemsSucess}
+        return {statusCode: HttpStatusCode.Created,response:this.logItemsSucess}
       }
    
   }

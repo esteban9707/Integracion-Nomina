@@ -35,12 +35,12 @@ export class NominaPresentationController {
     } catch (error) {
       if (error instanceof BadRequestException) {
         throw new HttpException({
-          status: HttpStatus.BAD_REQUEST,
+          statusCode: HttpStatus.BAD_REQUEST,
           error: error.message,
         }, HttpStatus.BAD_REQUEST);
       } else {
         throw new HttpException({
-          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
           error: error || 'Internal server error',
         }, HttpStatus.INTERNAL_SERVER_ERROR);
       }
