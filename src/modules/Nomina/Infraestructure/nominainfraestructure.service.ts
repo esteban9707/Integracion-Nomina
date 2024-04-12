@@ -4,6 +4,7 @@ https://docs.nestjs.com/providers#services
 
 import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import axios, { HttpStatusCode } from 'axios';
+import { error } from 'console';
 import * as xml2js from 'xml2js';
 
 @Injectable()
@@ -16,7 +17,7 @@ export class NominaInfraestructureService {
     const username = destinoConfig.User;
     const password = destinoConfig.Password;
     const url = destinoConfig.Url
-
+    try {
       const response = await axios.post(
         url,
         xml,
@@ -36,9 +37,13 @@ export class NominaInfraestructureService {
       });
       if(this.logItems.MaximumLogItemSeverityCode == '3'){
         throw this.logItems;
-      }else{
+      }if(this.logItems.MaximumLogItemSeverityCode == '1'){
         return {statusCode: HttpStatusCode.Created,response:this.logItemsSucess}
       }
+    } catch (error) {
+      throw error
+    }
+      
    
   }
 }
